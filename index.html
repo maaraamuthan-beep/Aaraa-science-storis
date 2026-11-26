@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aaraa Science Stories - Light</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: linear-gradient(#87ceeb, #e0f7ff 60%, #8bd36b 60%); min-height: 100vh; overflow: hidden; text-align: center; }
+  h1 { background: #1e88e5; color: #fff; padding: 12px; font-size: 22px; }
+  .sun { position: absolute; top: 70px; right: 40px; width: 80px; height: 80px; background: #ffd54f; border-radius: 50%; box-shadow: 0 0 40px 20px #ffe082; animation: glow 3s infinite alternate; }
+  @keyframes glow { from { transform: scale(1); } to { transform: scale(1.12); } }
+  .beam { position: absolute; top: 110px; right: 110px; width: 55%; height: 6px; background: linear-gradient(90deg, #ffe082, transparent); transform-origin: right center; transform: rotate(8deg); animation: beam 2s infinite alternate; }
+  @keyframes beam { from { opacity: .4; } to { opacity: 1; } }
+  .scene { position: absolute; bottom: 8%; left: 0; right: 0; display: flex; justify-content: center; align-items: flex-end; gap: 30px; }
+  .boy, .dog { font-size: 110px; display: inline-block; }
+  .boy { animation: bob 2s infinite ease-in-out; }
+  .dog { animation: wag 1s infinite ease-in-out; }
+  @keyframes bob { 50% { transform: translateY(-12px); } }
+  @keyframes wag { 50% { transform: rotate(-8deg) translateX(10px); } }
+  .bubble { position: absolute; left: 50%; top: 150px; transform: translateX(-50%); width: min(90%, 560px); background: #fff; border: 4px solid #1e88e5; border-radius: 24px; padding: 18px; font-size: 22px; color: #222; box-shadow: 0 6px 16px rgba(0,0,0,.2); }
+  .name { font-weight: bold; color: #e53935; margin-bottom: 6px; }
+  button { position: absolute; bottom: 4%; left: 50%; transform: translateX(-50%); background: #ff9800; color: #fff; border: none; border-radius: 30px; padding: 14px 34px; font-size: 22px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,.3); }
+  button:active { transform: translateX(-50%) scale(.95); }
+  #next { display: none; }
+</style>
+</head>
+<body>
+<h1>Aaraa Science Stories - ஒளி (Light)</h1>
+<div class="sun"></div>
+<div class="beam"></div>
+
+<div class="bubble">
+  <div class="name" id="who">Ravi</div>
+  <div id="text">கதையை ஆரம்பிக்க Start பட்டனை அழுத்து!</div>
+</div>
+
+<div class="scene">
+  <span class="boy">🧒</span>
+  <span class="dog">🐶</span>
+</div>
+
+<button id="start">▶ Start</button>
+<button id="next">Next ➜</button>
+
+<script>
+  var lines = [
+    { who: "ரவி", say: "ஹாய்! நான் ரவி. இங்கே பாரு, சூரிய ஒளி என் ஜன்னல் வழியா வருது!" },
+    { who: "ரவி", say: "டாமி, இந்த ஒளி எப்படி நம்ம கிட்ட பயணம் செய்யுது?" },
+    { who: "டாமி (நாய்)", say: "வவ்வவ்! ரவி, ஒளி எப்போதும் நேர் கோட்டுல தான் பயணம் செய்யும்!" },
+    { who: "டாமி (நாய்)", say: "சூரியன்ல இருந்து கிளம்பி, நேரா நம்ம கண்ணுக்கு வருது. அதனால தான் நமக்கு எல்லாம் தெரியுது!" }
+  ];
+  var i = -1;
+  var startBtn = document.getElementById("start");
+  var nextBtn = document.getElementById("next");
+
+  function speak(t) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(t);
+    u.lang = "ta-IN";
+    u.rate = 0.9;
+    window.speechSynthesis.speak(u);
+  }
+
+  function show() {
+    document.getElementById("who").textContent = lines[i].who;
+    document.getElementById("text").textContent = lines[i].say;
+    speak(lines[i].say);
+  }
+
+  startBtn.onclick = function () {
+    startBtn.style.display = "none";
+    nextBtn.style.display = "block";
+    i = 0; show();
+  };
+
+  nextBtn.onclick = function () {
+    if (i < lines.length - 1) { i++; show(); }
+    else { nextBtn.textContent = "முடிந்தது! 🎉"; speak("அடுத்த பாடத்தில் சந்திக்கலாம்!"); }
+  };
+</script>
+</body>
+</html>
