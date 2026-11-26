@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Light - Reflection</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#000;font-family:Arial,sans-serif}
+#stage{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(#7ec8ff 0%,#bfe6ff 45%,#ffeec2 70%)}
+#sun{position:absolute;left:3%;top:12%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#fff,#fff3b0 30%,#ffd34d 60%,#ff9800);box-shadow:0 0 70px 35px rgba(255,210,70,.8)}
+#room{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(#c9a26b,#8a6234)}
+#wall{position:absolute;right:3%;bottom:34%;width:52%;height:44%;background:linear-gradient(#f7e2b8,#e6c78c);border:4px solid #b5782e;box-shadow:inset 0 0 40px rgba(0,0,0,.15)}
+#mirror{position:absolute;right:12%;bottom:38%;width:110px;height:200px;border:8px solid #8a5a1f;border-radius:14px;background:linear-gradient(135deg,#f4fbff 0%,#a8d4ee 45%,#eaf7ff 55%,#9ccbe6 100%);box-shadow:0 8px 20px rgba(0,0,0,.4)}
+#mirror:after{content:"";position:absolute;top:10px;left:14px;width:26px;height:150px;background:rgba(255,255,255,.55);transform:skewX(-14deg);border-radius:8px}
+#mfx{position:absolute;right:calc(12% + 55px);bottom:calc(38% + 100px);width:0;height:0}
+.beam{position:absolute;height:12px;border-radius:12px;transform-origin:left center;background:linear-gradient(90deg,rgba(255,240,150,.95),rgba(255,230,110,.85));filter:blur(1.5px);box-shadow:0 0 18px 6px rgba(255,230,120,.7);width:0}
+#inBeam{left:0;top:0}
+#outBeam{left:0;top:0}
+#normal{position:absolute;width:3px;height:0;background:repeating-linear-gradient(#444 0 6px,transparent 6px 12px);transform-origin:center bottom;left:0;top:-90px;opacity:0;transition:opacity 1s}
+.lbl{position:absolute;background:#fff;border:3px solid #1e88e5;border-radius:12px;padding:4px 10px;font-size:15px;color:#222;opacity:0;transition:opacity 1s;white-space:nowrap}
+#lblI{left:-190px;top:-85px}
+#lblR{left:-10px;top:-120px}
+#lblN{left:8px;top:-98px}
+.show{opacity:1!important}
+.char{position:absolute;bottom:13%;filter:drop-shadow(8px 6px 5px rgba(0,0,0,.4))}
+#ravi{left:22%;width:120px;height:215px}
+#dog{left:8%;width:165px;height:120px}
+.talk .mouth{animation:talk .2s steps(2) infinite}
+@keyframes talk{50%{transform:scaleY(.25)}}
+.talk .arm{animation:wave .45s ease-in-out infinite alternate}
+.arm{transform-origin:22px 104px}
+@keyframes wave{to{transform:rotate(-40deg)}}
+.tail{transform-origin:20px 50px;animation:wag .3s ease-in-out infinite alternate}
+@keyframes wag{to{transform:rotate(38deg)}}
+.blink{animation:blink 4s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+#start{position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,20,60,.88);color:#fff;font-size:26px;cursor:pointer;text-align:center}
+#start b{display:block;font-size:32px;margin-bottom:10px}
+#go{margin-top:22px;background:linear-gradient(#ffb300,#ff7a00);border-radius:60px;padding:16px 46px;font-size:26px}
+#end{display:none;position:absolute;bottom:6%;right:5%;z-index:8;background:linear-gradient(#66bb6a,#2e7d32);color:#fff;font-size:22px;padding:14px 34px;border-radius:60px;text-decoration:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="sun"></div>
+  <div id="wall"></div>
+  <div id="mirror"></div>
+  <div id="room"></div>
+
+  <div id="mfx">
+    <div class="beam" id="inBeam"></div>
+    <div class="beam" id="outBeam"></div>
+    <div id="normal"></div>
+    <div class="lbl" id="lblI">வரும் கோணம் (Incident ray)</div>
+    <div class="lbl" id="lblR">போகும் கோணம் (Reflected ray)</div>
+    <div class="lbl" id="lblN">Normal</div>
+  </div>
+
+  <svg id="ravi" class="char" viewBox="0 0 120 220">
+    <defs>
+      <linearGradient id="shirt" x1="0" x2="1"><stop offset="0" stop-color="#ff6f61"/><stop offset="1" stop-color="#c62828"/></linearGradient>
+      <linearGradient id="pants" x1="0" x2="1"><stop offset="0" stop-color="#5469d4"/><stop offset="1" stop-color="#283593"/></linearGradient>
+      <radialGradient id="skin" cx=".4" cy=".35"><stop offset="0" stop-color="#f0b06a"/><stop offset="1" stop-color="#c2783a"/></radialGradient>
+    </defs>
+    <ellipse cx="60" cy="212" rx="38" ry="6" fill="rgba(0,0,0,.25)"/>
+    <rect x="36" y="160" width="20" height="48" rx="6" fill="url(#pants)"/><rect x="62" y="160" width="20" height="48" rx="6" fill="url(#pants)"/>
+    <ellipse cx="44" cy="208" rx="15" ry="7" fill="#3e2723"/><ellipse cx="74" cy="208" rx="15" ry="7" fill="#3e2723"/>
+    <rect x="32" y="98" width="56" height="68" rx="14" fill="url(#shirt)"/>
+    <g class="arm"><rect x="14" y="102" width="16" height="50" rx="8" fill="url(#skin)"/><circle cx="22" cy="154" r="9" fill="url(#skin)"/></g>
+    <rect x="90" y="102" width="16" height="50" rx="8" fill="url(#skin)"/><circle cx="98" cy="154" r="9" fill="url(#skin)"/>
+    <rect x="52" y="86" width="16" height="16" fill="#c2783a"/>
+    <ellipse cx="60" cy="58" rx="40" ry="42" fill="url(#skin)"/>
+    <ellipse cx="22" cy="62" rx="7" ry="10" fill="#c2783a"/><ellipse cx="98" cy="62" rx="7" ry="10" fill="#c2783a"/>
+    <path d="M19 55 Q20 8 60 10 Q100 8 101 55 Q92 30 60 32 Q28 30 19 55Z" fill="#1d120a"/>
+    <g class="blink" style="transform-origin:60px 60px">
+      <ellipse cx="44" cy="60" rx="9" ry="10" fill="#fff"/><ellipse cx="76" cy="60" rx="9" ry="10" fill="#fff"/>
+      <circle cx="46" cy="61" r="5" fill="#3b2314"/><circle cx="78" cy="61" r="5" fill="#3b2314"/>
+      <circle cx="48" cy="58" r="1.8" fill="#fff"/><circle cx="80" cy="58" r="1.8" fill="#fff"/>
+    </g>
+    <path d="M34 46 Q44 40 54 46" stroke="#1d120a" stroke-width="3" fill="none"/><path d="M66 46 Q76 40 86 46" stroke="#1d120a" stroke-width="3" fill="none"/>
+    <path d="M58 64 Q60 72 63 68" stroke="#a85f2a" stroke-width="2.5" fill="none"/>
+    <circle cx="34" cy="76" r="6" fill="rgba(255,120,100,.35)"/><circle cx="86" cy="76" r="6" fill="rgba(255,120,100,.35)"/>
+    <g class="mouth" style="transform-origin:60px 84px"><path d="M46 82 Q60 100 74 82Z" fill="#7a1f1f"/><path d="M50 83 Q60 88 70 83 L70 85 Q60 90 50 85Z" fill="#fff"/></g>
+  </svg>
+
+  <svg id="dog" class="char" viewBox="0 0 160 120">
+    <defs><radialGradient id="fur" cx=".4" cy=".3"><stop offset="0" stop-color="#f0aa66"/><stop offset="1" stop-color="#b8662c"/></radialGradient></defs>
+    <ellipse cx="72" cy="114" rx="60" ry="6" fill="rgba(0,0,0,.25)"/>
+    <g class="tail"><path d="M22 50 Q0 24 10 8" stroke="#b8662c" stroke-width="11" fill="none" stroke-linecap="round"/></g>
+    <ellipse cx="70" cy="66" rx="50" ry="30" fill="url(#fur)"/>
+    <ellipse cx="72" cy="80" rx="30" ry="16" fill="#f6d3a8"/>
+    <rect x="34" y="82" width="14" height="30" rx="7" fill="#a85a24"/><rect x="58" y="86" width="14" height="26" rx="7" fill="#b8662c"/>
+    <rect x="84" y="86" width="14" height="26" rx="7" fill="#b8662c"/><rect x="98" y="82" width="14" height="30" rx="7" fill="#a85a24"/>
+    <circle cx="118" cy="46" r="28" fill="url(#fur)"/>
+    <ellipse cx="98" cy="34" rx="11" ry="22" fill="#7a3e14" transform="rotate(12 98 34)"/>
+    <ellipse cx="134" cy="58" rx="16" ry="12" fill="#f6d3a8"/><ellipse cx="144" cy="53" rx="6" ry="5" fill="#222"/>
+    <g class="blink" style="transform-origin:118px 40px"><circle cx="118" cy="40" r="6.5" fill="#fff"/><circle cx="119.5" cy="40.5" r="3.5" fill="#2a170a"/><circle cx="120.5" cy="39" r="1.2" fill="#fff"/></g>
+    <path d="M108 30 Q116 26 124 31" stroke="#5a2d0c" stroke-width="2.5" fill="none"/>
+    <g class="mouth" style="transform-origin:132px 66px"><path d="M124 64 Q134 78 144 64Z" fill="#c2185b"/><ellipse cx="134" cy="71" rx="5" ry="3" fill="#ff8a9b"/></g>
+  </svg>
+
+  <a id="end" href="index.html">↺ Back to start</a>
+  <div id="start"><b>ஒளியின் பிரதிபலிப்பு</b>Reflection of Light<div id="go">▶ Start</div></div>
+</div>
+
+<audio id="p2r1" src="p2r1.mp3" preload="auto"></audio>
+<audio id="p2d1" src="p2d1.mp3" preload="auto"></audio>
+<audio id="p2r2" src="p2r2.mp3" preload="auto"></audio>
+<audio id="p2d2" src="p2d2.mp3" preload="auto"></audio>
+<audio id="p2r3" src="p2r3.mp3" preload="auto"></audio>
+<audio id="p2d3" src="p2d3.mp3" preload="auto"></audio>
+<audio id="p2r4" src="p2r4.mp3" preload="auto"></audio>
+
+<script>
+var ravi=document.getElementById("ravi"),dog=document.getElementById("dog");
+var inB=document.getElementById("inBeam"),outB=document.getElementById("outBeam"),norm=document.getElementById("normal");
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function play(id,who){
+  return new Promise(function(done){
+    var a=document.getElementById(id);
+    who.classList.add("talk");
+    function finish(){who.classList.remove("talk");done()}
+    a.currentTime=0;a.onended=finish;a.onerror=function(){setTimeout(finish,2000)};
+    var p=a.play();if(p&&p.catch){p.catch(function(){setTimeout(finish,2000)})}
+  });
+}
+
+/* Light geometry: mirror is vertical. Incoming beam arrives from the upper left, reflects to the upper right? No: the mirror faces left, so the beam bounces back to the left and down. */
+function beamIn(angle,len){inB.style.transform="rotate("+angle+"deg)";inB.style.transition="width 1.6s ease-out";inB.style.width=len+"px"}
+function beamOut(angle,len){outB.style.transform="rotate("+angle+"deg)";outB.style.transition="width 1.6s ease-out";outB.style.width=len+"px"}
+
+function showBeam(){
+  /* incoming ray comes from sun (top left) travelling to the mirror point; draw it from the mirror point back toward the sun */
+  beamIn(200,380);
+}
+function showReflected(){
+  /* reflected ray leaves at the same angle on the other side of the normal, going down-left */
+  beamOut(160,380);
+}
+
+async function story(){
+  await wait(800);
+  showBeam();
+  await wait(1800);
+  showReflected();
+  document.getElementById("lblI").classList.add("show");
+  document.getElementById("lblR").classList.add("show");
+  await wait(800);
+  await play("p2r1",ravi);
+  await play("p2d1",dog);
+  await play("p2r2",ravi);
+  norm.style.height="180px";norm.classList.add("show");
+  document.getElementById("lblN").classList.add("show");
+  await play("p2d2",dog);
+  await play("p2r3",ravi);
+  await play("p2d3",dog);
+  await play("p2r4",ravi);
+  document.getElementById("end").style.display="block";
+}
+document.getElementById("start").onclick=function(){this.style.display="none";story()};
+</script>
+</body>
+</html>
